@@ -1,4 +1,4 @@
-#include "matrix.h"
+#include "Matrix.h"
 #include <iostream>
 
 using namespace std;
@@ -11,7 +11,7 @@ void invalid(Matrix a, Matrix b)
 
 void Matrix::set(const Matrix& a)
 {
-    if (m != 0)  dealloc();
+    dealloc();
     row = a.row; col = a.col;
     build();
     for (int i = 0; i <= row; i++)
@@ -21,6 +21,7 @@ void Matrix::set(const Matrix& a)
 
 Matrix::Matrix(const Matrix& a)
 {
+    m = 0;
     set(a);
 }
 
@@ -100,3 +101,24 @@ Matrix Matrix::mul_samepos(Matrix a)
             b.m[i][j] = m[i][j] * a.m[i][j];
     return b;
 }
+
+Vec Matrix::col_x(int x)
+{
+    Vec p(row);
+    for (int i = 1; i <= row; i++)
+        p.v[i] = m[i][x];
+    return p;
+}
+
+Vec Matrix::row_x(int x)
+{
+    Vec p(col);
+    for (int i = 1; i <= col; i++)
+        p.v[i] = m[x][i];
+    return p;
+}
+
+Matrix mul(Matrix a, Matrix b)  {return a.mul(b);}
+Matrix add(Matrix a, Matrix b)  {return a.add(b);}
+Matrix sub(Matrix a, Matrix b)  {return a.sub(b);}
+Matrix mul_samepos(Matrix a, Matrix b)  {return a.mul_samepos(b);}

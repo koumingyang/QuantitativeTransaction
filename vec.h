@@ -1,7 +1,7 @@
 #ifndef VEC_H
 #define VEC_H
 
-#include "const.h"
+#include "Const.h"
 
 struct Vec
 {
@@ -10,6 +10,7 @@ struct Vec
 
     void set_size(int _size)
     {
+        dealloc();
         size = _size;
         build();
     }
@@ -19,15 +20,15 @@ struct Vec
         set_zeros();
     }
 
-    Vec()   {set_size(DEFAULT_MATRIX_SIZE);}
-    Vec(int _size)  {set_size(_size);}
+    Vec()   {v = 0; set_size(DEFAULT_MATRIX_SIZE);}
+    Vec(int _size)  {v = 0; set_size(_size);}
     Vec(const Vec& a);
     Vec& operator =(const Vec& a);
     
-    void dealloc()  {delete [] v;}
+    void dealloc()  {if (v != 0)  delete [] v;}
     ~Vec()
     {
-        delete [] v;
+        dealloc();
     }
     
     void set_zeros();
@@ -45,10 +46,11 @@ struct Vec
     void set(const Vec& a);
 };
 
-Vec add(Vec a, double b)    {return a.add(b);}
-Vec add(Vec a, Vec b)  {return a.add(b);}
-Vec sub(Vec a, Vec b)  {return a.sub(b);}
-Vec mul(Vec a, Vec b)  {return a.mul(b);}
-Vec div(Vec a, Vec b)  {return a.div(b);}
+
+Vec add(Vec a, double b);
+Vec add(Vec a, Vec b);
+Vec sub(Vec a, Vec b);
+Vec mul(Vec a, Vec b);
+Vec div(Vec a, Vec b);
 
 #endif  //VEC_H

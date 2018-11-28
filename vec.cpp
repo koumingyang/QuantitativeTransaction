@@ -1,4 +1,4 @@
-#include "vec.h"
+#include "Vec.h"
 #include <iostream>
 #include <cmath>
 
@@ -12,7 +12,7 @@ void invalid(Vec a, Vec b)
 
 void Vec::set(const Vec& a)
 {
-    if (v != 0)  dealloc();
+    dealloc();
     size = a.size;
     build();
     for (int i = 0; i <= size; i++)
@@ -21,6 +21,7 @@ void Vec::set(const Vec& a)
 
 Vec::Vec(const Vec& a)
 {
+    v = 0;
     set(a);
 }
 
@@ -117,3 +118,9 @@ Vec Vec::div(Vec a)
         b.v[i] = v[i] / a.v[i];
     return b;
 }
+
+Vec add(Vec a, double b)    {return a.add(b);}
+Vec add(Vec a, Vec b)  {return a.add(b);}
+Vec sub(Vec a, Vec b)  {return a.sub(b);}
+Vec mul(Vec a, Vec b)  {return a.mul(b);}
+Vec div(Vec a, Vec b)  {return a.div(b);}
