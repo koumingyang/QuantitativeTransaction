@@ -22,6 +22,13 @@ struct Vec
 
     Vec()   {v = 0; set_size(DEFAULT_MATRIX_SIZE);}
     Vec(int _size)  {v = 0; set_size(_size);}
+    Vec(int _size, double init)
+    {
+        v = 0; 
+        set_size(_size);
+        for (int i = 1; i <= _size; i++)
+            v[i] = init;
+    }
     Vec(const Vec& a);
     Vec& operator =(const Vec& a);
     

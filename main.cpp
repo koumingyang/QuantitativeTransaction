@@ -2,6 +2,7 @@
 #include "Const.h"
 #include "Matrix.h"
 #include "Vec.h"
+#include "GenRollingErr.h"
 
 using namespace std;
 
@@ -53,9 +54,35 @@ void init(void)
     S = rt.size - ini_win;
 }
 
+void test(void)
+{
+    /*
+    a = [[1;2;3;4],[3;5;3;12],[9;5;2;6]];
+    cov(a)
+    ans =
+
+    1.6667    4.1667   -2.0000
+    4.1667   18.2500    1.1667
+   -2.0000    1.1667    8.3333
+   */
+    Matrix a(4,3);
+    a.m[1][1] = 1; a.m[2][1] = 2; a.m[3][1] = 3; a.m[4][1] = 4;
+    a.m[1][2] = 3; a.m[2][2] = 5; a.m[3][2] = 3; a.m[4][2] = 12;
+    a.m[1][3] = 9; a.m[2][3] = 5; a.m[3][3] = 2; a.m[4][3] = 6;
+    Matrix b = a.cov();
+    cout << b.row << ' ' << b.col << endl;
+    for (int i = 1; i <= b.row; i++)
+    {
+        for (int j = 1; j <= b.col; j++)
+            cout << b.m[i][j] << ' ';
+        cout << endl;
+    }
+}
+
 int main(void)
 {
     input();
     init();
+    test();
     return 0;
 }
