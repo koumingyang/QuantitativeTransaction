@@ -59,9 +59,6 @@ Matrix genBmaWeights (Matrix Y, Matrix X, double propsigma_beta)
     }
 
     
-    % Propose a new value for Sigma  
-    state_A = [state_a, state_b];
-    tau = (Y - X*state_A)'*(Y - X*state_A); % scalar factor tau
     new_Sigma = iwishrnd( tau , T-2 ); % a candidate draw from the inverted Wishart
     sigma_u_star = new_Sigma(1,1)^0.5;
     sigma2_v_star = new_Sigma(2,2);
