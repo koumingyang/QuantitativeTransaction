@@ -3,9 +3,14 @@
 
 using namespace std;
 
-void invalid(Cube a, Cube b)
+void invalid(const Cube &a, const Cube &b)
 {
     printf("invalid Cube size: (%d, %d, %d) (%d, %d, %d)\n", a.a, a.b, a.c, b.a, b.b, b.c);
+    exit(0);
+}
+void invalid_set_matab(const Cube &a, const Matrix &b)
+{
+    printf("invalid set matab: (%d, %d, %d) (%d, %d)\n", a.a, a.b, a.c, b.row, b.col);
     exit(0);
 }
 
@@ -18,6 +23,14 @@ void Cube::set(const Cube& t)
         for (int j = 0; j <= b; j++)
             for (int k = 0; k <= c; k++)
                 data[i][j] = t.data[i][j];
+}
+
+void Cube::set_matab(int x, const Matrix& t)
+{
+    if (a < t.row || b < t.col) invalid_set_matab(*this, t);
+    for (int i = 0; i <= t.row; i++)
+        for (int j = 0; j <= t.col; j++)
+            data[i][j][x] = t.m[i][j];
 }
 
 Cube::Cube(const Cube& t)

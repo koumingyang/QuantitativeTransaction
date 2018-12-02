@@ -51,6 +51,7 @@ struct Cube
     Cube sub(Cube t);
     Cube mul_samepos(Cube t);
     void set(const Cube& t);
+    void set_matab(int x, const Matrix& t);
     void dealloc()  {if (data != 0)  delete [] data;}
     ~Cube()   {dealloc();}
 };

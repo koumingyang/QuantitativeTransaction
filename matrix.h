@@ -50,7 +50,7 @@ struct Matrix
     Matrix transpose();     //矩阵转置
     Matrix inverse();       //矩阵求逆
     Matrix cov();           //协方差
-    void set_col(int x, Vec a);     //第x列设为a
+    void set_col(int x, const Vec &a);     //第x列设为a
     void set(const Matrix& a);
     void dealloc()  {if (m != 0)  delete [] m;}
     Vec col_x(int x);       //返回第x列（第二维坐标为x）的向量

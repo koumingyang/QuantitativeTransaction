@@ -3,15 +3,19 @@
 
 using namespace std;
 
-void invalid(Matrix a, Matrix b)
+void invalid(const Matrix &a, const Matrix &b)
 {
     printf("invalid matrix size: (%d, %d) (%d, %d)\n", a.row, a.col, b.row, b.col);
     exit(0);
 }
-
-void invalid_inverse(Matrix a)
+void invalid_inverse(const Matrix &a)
 {
     printf("invalid matrix size for inverse: (%d, %d)\n", a.row, a.col);
+    exit(0);
+}
+void invalid_setcol(const Matrix &a, const Vec &b)
+{
+    printf("invalid matrix size for set col: (%d, %d), %d\n", a.row, a.col, b.size);
     exit(0);
 }
 
@@ -23,6 +27,13 @@ void Matrix::set(const Matrix& a)
     for (int i = 0; i <= row; i++)
         for (int j = 0; j <= col; j++)
             m[i][j] = a.m[i][j];
+}
+
+void Matrix::set_col(int x, const Vec &a)
+{
+    if (row < a.size)  invalid_setcol(*this, a);
+    for (int i = 0; i <= a.size; i++)
+        m[i][x] = a.v[i];
 }
 
 Matrix::Matrix(const Matrix& a)
