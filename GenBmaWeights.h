@@ -1,11 +1,12 @@
 #ifndef GEN_BMA_WEIGHTS_H
 #define GEN_BMA_WEIGHTS_H
 
-#include "Matrix.h"
-#include "Vec.h"
+#include <armadillo>
 #include "Const.h"
-#include "Cube.h"
+#include "GenBmaWeights.h"
 #include <cmath>
+
+using namespace arma;
 
 /*
     MH algorithm to calculate the BMA weights
@@ -29,6 +30,6 @@
         w1: the weight for model 1
 */
 
-Matrix genBmaWeights (Matrix Y, Matrix X, double propsigma_beta);
+mat genBmaWeights (mat Y, mat X, double propsigma_beta);
 
 #endif  //GEN_BMA_WEIGHTS_H

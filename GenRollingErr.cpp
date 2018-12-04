@@ -1,13 +1,13 @@
 #include "GenRollingErr.h"
 
-Matrix genRollingErr(Vec rt, Vec x, int ini_win, double propsigma_beta, int flag_bma)
+mat genRollingErr (vec rt, vec x, int ini_win, double propsigma_beta, int flag_bma)
 {
-    int S = rt.size - ini_win;
+    int S = rt.n_elem - ini_win;
 
-    Vec en(S+1, NAN);   //the rolling OOS errors from the historical mean
-    Vec ea(S+1, NAN);   //the rolling OOS errors from the ols
-    Vec ew(S+1, NAN);   //the rolling OOS errors from the equal weights
-    Vec eb(S+1, NAN);   //the rolling OOS errors from the bma
+    vec en(S+1); en.fill(0); en.fill(NAN);  //the rolling OOS errors from the historical mean
+    vec ea(S+1); ea.fill(0); ea.fill(NAN);  //the rolling OOS errors from the ols
+    vec ew(S+1); ew.fill(0); ew.fill(NAN);  //the rolling OOS errors from the equal weights
+    vec eb(S+1); eb.fill(0); eb.fill(NAN);  //the rolling OOS errors from the bma
 
     if (flag_bma == 1)
     {
@@ -15,15 +15,8 @@ Matrix genRollingErr(Vec rt, Vec x, int ini_win, double propsigma_beta, int flag
         for (s = 0; s <= S; s++)
         {
             int Ts = ini_win + s;   //time for the 1-step forecast in rolling s
-            Matrix Y(Ts - 1, 2);
-            Matrix X(Ts - 1, 2);
-            for (i = 1; i <= Ts - 1; i++)
-            {
-                Y.m[i][1] = rt.v[i];
-                Y.m[i][2] = x.v[i+1];
-                X.m[i][1] = 1.0;
-                X.m[i][2] = x.v[i];
-            }
+            mat y = join_horiz(rt.subvec(0, Ts - 2), x.subvec(1, Ts - 1));
+            mat x = join_horiz(ones<vec>(Ts - 1), x.subvec(0, Ts - 2));
         }
     }
     
