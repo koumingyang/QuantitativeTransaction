@@ -20,6 +20,6 @@ using namespace arma;
         c: vec(times + 1)
         y = c[0] + c[1] * x + c[2] * x ^ 2 + ... + c[times] * x ^ times
 */
-vec regress(vec x, mat y, int times = 1);
+vec regress(vec x, mat y, int times);
 
 #endif  //REGRESS_H

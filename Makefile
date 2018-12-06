@@ -3,18 +3,25 @@ SOURCE  := $(wildcard *.c) $(wildcard *.cpp)
 TOP_PATH 	:= $(shell pwd)
 LIB_PATH 	:= $(TOP_PATH)/lib/
 
-OBJS =      Vec.o	\
-            Matrix.o	
+OBJS =      BootFunc.o	\
+            BootFuncBMA.o	\
+			GenBmaWeights.o \
+			GenRollingErr.o \
+			Regress.o
 
 OBJS_MAIN = $(OBJS)	\
-			Main.o
+			Main.o	
 
 OBJS_MAIN_ANNUAL1 = $(OBJS)	\
 					MainAnnual1.o
 
+OBJS_BOOTSTRAP_BMA = $(OBJS)	\
+					BootStrapBMA.o
+
 OBJS_ALL = $(OBJS)  \
             Main.o  \
-            MainAnnual1.o
+            MainAnnual1.o	\
+			BootStrapBMA.o
 
 TARGET_MAIN =    main
 TARGET_MAIN_ANNUAL1 = 	main_annual1
@@ -29,12 +36,14 @@ CXXFLAGS:= $(CFLAGS) -DHAVE_CONFIG_H
   
   
 .PHONY : everything objs clean veryclean rebuild
-  
-everything : $(TARGET)
-  
+
+everything : $(TARGET_MAIN)
+
 all : $(TARGET_MAIN)
 
 annual1 : $(TARGET_MAIN_ANNUAL1)
+
+btstrpbma : $(TARGET_BOOTSTRAP_BMA)
   
 objs : $(OBJS)
   
@@ -47,9 +56,11 @@ clean :
 veryclean : clean
 	rm -fr $(TARGET_MAIN) $(TARGET_MAIN_ANNUAL1)
   
-$(TARGET) : $(OBJS_MAIN)
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJS) $(LDFLAGS) $(LIBS)
+$(TARGET_MAIN) : $(OBJS_MAIN)
+	$(CXX) $(CXXFLAGS) -o $@ $(OBJS_MAIN) $(LDFLAGS) $(LIBS)
 $(TARGET_MAIN_ANNUAL1) : $(OBJS_MAIN_ANNUAL1)
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJS) $(LDFLAGS) $(LIBS)
+	$(CXX) $(CXXFLAGS) -o $@ $(OBJS_MAIN_ANNUAL1) $(LDFLAGS) $(LIBS)
+$(TARGET_BOOTSTRAP_BMA) : $(OBJS_BOOTSTRAP_BMA)
+	$(CXX) $(CXXFLAGS) -o $@ $(OBJS_BOOTSTRAP_BMA) $(LDFLAGS) $(LIBS)
 	
 
