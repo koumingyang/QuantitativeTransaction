@@ -3,7 +3,6 @@
 
 #include <armadillo>
 #include "Const.h"
-#include "GenBmaWeights.h"
 #include <cmath>
 
 using namespace arma;
@@ -25,11 +24,10 @@ using namespace arma;
         propsigma_beta: standard dev. of proposal distribution for beta
 
     OUTPUTS:
-        W: [w0, w1]
         w0: the weight for model 0
-        w1: the weight for model 1
+        (w1: the weight for model 1, w1 = 1.0 - w0, can be calculated when given w0)
 */
 
-mat genBmaWeights (mat Y, mat X, double propsigma_beta);
+double genBmaWeights (mat Y, mat X, double propsigma_beta);
 
 #endif  //GEN_BMA_WEIGHTS_H

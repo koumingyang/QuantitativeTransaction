@@ -1,7 +1,7 @@
 #include "GenBmaWeights.h"
 using namespace std;
 
-mat genBmaWeights (mat Y, mat X, double propsigma_beta)
+double genBmaWeights (mat Y, mat X, double propsigma_beta)
 {
     int T = Y.n_rows;
     double x0 = X(0, 1);
@@ -80,61 +80,50 @@ mat genBmaWeights (mat Y, mat X, double propsigma_beta)
             state_b = new_b.col(0);                         //proposal becomes new value for b
         
         //Block 3: directly draw from P(a | b, Sigma, D, M1)
+        tmp = v11 - v12 * solve(v22, v21);
+        vec mvn_mu = solve(Omega + inv(tmp), solve(tmp, a_hat + v12 * solve(v22, state_b - b_hat)));
+        mat mvn_Sigma = inv(Omega + inv(tmp));
 
+        //eliminate the numerical rounding error
+        mvn_Sigma = (mvn_Sigma + trans(mvn_Sigma)) / 2;
+        mat new_a = mvnrnd(mvn_mu, mvn_Sigma);
+        vec state_a = new_a.col(0);
+
+        //Save state
+        state_a_list.col(s - 1) = state_a;                  //save the current state of a
+        state_b_list.col(s - 1) = state_b;                  //save the current state of b
+        state_Sigma_list.slice(s - 1) = state_Sigma;        //save the current state of Sigma
     }       
 
+    int burning = 50000;
+    int S = N - 50000;                                      //number of effective draws
+    mat a_draws = state_a_list.cols(burning, N - 1);
+    mat b_draws = state_b_list.cols(burning, N - 1);
+    cube Sigma_draws = state_Sigma_list.slices(burning, N - 1);
+    
+    //Calculate Bayes factor by the Savage-Dickey ratio
+    //Calculate P(beta=0 | D��M1)
 
-    
-    %% Block 3: directly draw from P(a | b, Sigma, D, M1)
-    
-    mvn_mu = (Omega + inv(v11 - v12*(v22\v21)))\((v11 - v12*(v22\v21)) \ ...
-         (a_hat + v12*(v22\(state_b - b_hat))));    
- 
-    mvn_Sigma = inv(Omega + inv(v11 - v12*(v22\v21)));
-    
-    % eliminate the numerical rounding error
-    mvn_Sigma = (mvn_Sigma + mvn_Sigma')/2;
-    
-    new_a = mvnrnd(mvn_mu, mvn_Sigma);
-    state_a = new_a';
-    
-    %% Save state
-    state_a_list(:,s) = state_a;
-    state_b_list(:,s) = state_b;
-    state_Sigma_list(:,:,s) = state_Sigma; 
-    
-   
-end
+    vec probbeta0(S); probbeta0.fill(0); probbeta0.fill(NAN);
+    for (s = 1; s <= S; s++)
+    {   
+        mat V = inv(kron(inv(Sigma_draws.slice(s-1)), trans(X) * X));
+        mat v11 = V( span(0, 1), span(0, 1) );
+        mat v12 = V( span(0, 1), span(2, 3) );
+        mat v21 = V( span(2, 3), span(0, 1) );
+        mat v22 = V( span(2, 3), span(2, 3) );
+        //a | b, Sigma, D, M1 is N(mu_a, Sigma_a)
+        mat tmp = v11 - v12 * solve(v22, v21);
+        vec mu_a = solve(Omega + inv(tmp), solve(tmp, a_hat + v12 * solve(v22, b_draws.col(s-1) - b_hat)));
+        mat Sigma_a = inv(Omega + inv(tmp));
+        //beta | d0, Sigma, D, M1 is N(postmu_beta, postsigma2_beta)
+        double postmu_beta = mu_a(1) + (a_draws(0, s-1) - mu_a(0)) * Sigma_a(0, 1) / Sigma_a(0, 0);
+        double postsigma2_beta = (1 - Sigma_a(0, 1) * Sigma_a(0, 1) / (Sigma_a(0, 0) * Sigma_a(1, 1))) * Sigma_a(1, 1);
+        probbeta0(s - 1) = exp(-0.5 * postmu_beta * postmu_beta / postsigma2_beta) / pow(postsigma2_beta, 0.5);
+    }
 
-burning = 50000;
-S = N - 50000; % number of effective draws
-a_draws = state_a_list(:,burning+1:end);
-b_draws = state_b_list(:,burning+1:end);
-Sigma_draws = state_Sigma_list(:,:,burning+1:end);
-
-%% Calculate Bayes factor by the Savage-Dickey ratio
-% Calculate P(beta=0 | D��M1)
-probbeta0 = NaN(S,1);
-for s=1:S
-    V = inv(kron(inv(Sigma_draws(:,:,s)),X'*X));
-    v11 = V(1:2,1:2);
-    v12 = V(1:2,3:4);
-    v21 = V(3:4,1:2);
-    v22 = V(3:4,3:4);
-    
-    % a | b, Sigma, D, M1 is N(mu_a, Sigma_a)
-    mu_a = (Omega + inv(v11 - v12*(v22\v21)))\((v11 - v12*(v22\v21)) \ ...
-         (a_hat + v12*(v22\(b_draws(:,s) - b_hat))));    
-    Sigma_a = inv(Omega + inv(v11 - v12*(v22\v21)));
-    
-    % beta | d0, Sigma, D, M1 is N(postmu_beta, postsigma2_beta)
-    postmu_beta = mu_a(2) + (a_draws(1,s)-mu_a(1))*Sigma_a(1,2)/Sigma_a(1,1);
-    postsigma2_beta = (1 - Sigma_a(1,2)^2/(Sigma_a(1,1)*Sigma_a(2,2)))*Sigma_a(2,2);
-    
-    probbeta0(s) = exp(-0.5*postmu_beta^2/postsigma2_beta)/postsigma2_beta^0.5;
-end
-
-bayes_factor = mean(probbeta0) / (1/propsigma_beta);
-
-w0 = bayes_factor / (1 + bayes_factor);
-w1 = 1 - w0;
+    double bayes_factor = mean(probbeta0) / (1.0 / propsigma_beta);
+    double w0 = bayes_factor / (1 + bayes_factor);
+    double w1 = 1 - w0;
+    return w0;
+}
