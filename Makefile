@@ -1,7 +1,5 @@
 SOURCE  := $(wildcard *.c) $(wildcard *.cpp)
 #OBJS    := $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCE)))
-TOP_PATH 	:= $(shell pwd)
-LIB_PATH 	:= $(TOP_PATH)/lib/
 
 OBJS =      BootFunc.o	\
             BootFuncBMA.o	\
@@ -32,10 +30,10 @@ TARGET_MAIN_MONTHLY1 = 	main_monthly1
 TARGET_BOOTSTRAP_BMA = 	bootstrap_bma
   
 CC      := gcc
-LIBS    += -larmadillo
+LIBS    += -lblas -llapack 
 LDFLAGS := 
 DEFINES :=
-INCLUDE := -I.
+INCLUDE := -I .\include
 CFLAGS  := -g -Wall -O3 -std=c++14 $(DEFINES) $(INCLUDE)
 CXXFLAGS:= $(CFLAGS) -DHAVE_CONFIG_H
   
