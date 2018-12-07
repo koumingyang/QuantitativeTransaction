@@ -2,11 +2,14 @@
 #define GEN_ROLLING_ERR_H
 
 #include <armadillo>
+#include <iostream>
 #include "Const.h"
 #include "GenBmaWeights.h"
 #include "Regress.h"
 
 using namespace arma;
+using namespace std;
+
 
 /*
     function to calculate rolling OOS errors
@@ -28,5 +31,6 @@ using namespace arma;
 */
 
 mat genRollingErr (vec rt, vec x, int ini_win, double propsigma_beta, int flag_bma);
+void output(ofstream &fout, mat m);
 
 #endif  //GEN_ROLLING_ERR_H

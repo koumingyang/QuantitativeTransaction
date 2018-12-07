@@ -80,3 +80,13 @@ mat genRollingErr (vec rt, vec x, int ini_win, double propsigma_beta, int flag_b
     return result;
 }
 
+void output(ofstream &fout, mat m)
+{
+    fout << "mat size: " << m.n_rows << ' ' << m.n_cols << endl;
+    for (int i = 0; i < m.n_rows; i++)
+    {
+        for (int j = 0; j < m.n_cols; j++)
+            fout << m(i, j) << ' ' ;
+        fout << endl;
+    }
+}

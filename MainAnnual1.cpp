@@ -216,6 +216,9 @@ void work(void)
         out(i, span(7, 18)) = out2;
         cout << "Main Part 3 Over";
     }
+
+    ofstream fout ("output.txt");
+    output(fout, out);
 }
 
 void test(void)

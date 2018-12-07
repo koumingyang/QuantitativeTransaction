@@ -55,11 +55,11 @@ objs : $(OBJS)
 rebuild: veryclean everything
                 
 clean :
-	rm -fr *.so
-	rm -fr *.o
+	del -fr *.so
+	del -fr *.o
     
 veryclean : clean
-	rm -fr $(TARGET_MAIN) $(TARGET_MAIN_ANNUAL1) $(TARGET_MAIN_MONTHLY1) $(TARGET_BOOTSTRAP_BMA)
+	del -fr $(TARGET_MAIN) $(TARGET_MAIN_ANNUAL1) $(TARGET_MAIN_MONTHLY1) $(TARGET_BOOTSTRAP_BMA)
   
 $(TARGET_MAIN) : $(OBJS_MAIN)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJS_MAIN) $(LDFLAGS) $(LIBS)
