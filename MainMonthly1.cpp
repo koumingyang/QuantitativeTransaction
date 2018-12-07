@@ -210,6 +210,9 @@ void work(void)
         out(i, span(0, 6)) = out1;
         out(i, span(7, 18)) = out2;
     }
+
+    ofstream fout ("output.txt");
+    output(fout, out);
 }
 
 void test(void)

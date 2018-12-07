@@ -108,6 +108,7 @@ void work(void)
         double x0 = x(0);               //initial value of predictor
         vec rt = dat.rows(1, dat.n_rows - 1).col(0);
         int ini_win = 20;               //CHANGE when consider begin forecast in 1965 or in 1976
+        //int ini_win = 240 - rows;       //forecast from 194701
         double propsigma_beta = 0.0001; //set hyperparameter sigma_beta to: 0.0001, 0.001, 0.01, 0.1, 1, 10
         int S = rt.n_elem - ini_win;    //the out-of-sample evaluation periods is S+1
 
