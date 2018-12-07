@@ -54,10 +54,13 @@ void work(void)
     cout << "Main Part0 Over" << endl;
 
     // the out-of-sample evaluation periods is S+1
+
+    int ini_win = 20;               //CHANGE when consider begin forecast in 1965 or in 1976
+    double propsigma_beta = 0.01;   //set hyperparameter sigma_beta to: 0.0001, 0.001, 0.01, 0.1, 1, 10
     S = rt.n_elem - ini_win;
     cout << "Main Part0.1 Over" << endl;
 
-    /*
+    
     mat result = genRollingErr(rt, x, ini_win, propsigma_beta, 1);
     cout << "Main Part0.2 Over" << endl;
     vec en = result.col(0);
@@ -97,7 +100,7 @@ void work(void)
     double msef_eb = ((double)(S+1-1+1)) * (mse_en - mse_eb) / (mse_eb);
 
     cout << "Main Part1 Over" << endl;
-    */
+    
 
     //Bootstrap the critical values for the MSE-F statistics
     //use full sample to estimate the parameter in the NULL (no predictability)

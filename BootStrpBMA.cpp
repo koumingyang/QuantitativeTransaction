@@ -49,6 +49,9 @@ void work(void)
     int end = prc.n_elem - 1;
     rt = log(prc.subvec(1, end) + dvd.subvec(1, end)) / prc.subvec(0, end - 1) - log(1.0 + rf.subvec(1, end));
 
+    int ini_win = 20;               //CHANGE when consider begin forecast in 1965 or in 1976
+    double propsigma_beta = 0.01;   //set hyperparameter sigma_beta to: 0.0001, 0.001, 0.01, 0.1, 1, 10
+    
     double alpha_hat = mean(rt);
     vec rt_fit(rt.n_elem);
     rt_fit.fill(alpha_hat);                             //rt fit in the 1st equation of NULL predictability model

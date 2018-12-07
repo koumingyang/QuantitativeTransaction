@@ -49,6 +49,12 @@ double genBmaWeights (mat Y, mat X, double propsigma_beta)
         mat state_A = join_horiz(state_a, state_b);
         mat tmp = Y - X * state_A;
         mat tau = trans(tmp) * tmp;                         //scalar factor tau
+        /*for (int i = 0; i < tau.n_rows; i++){
+            for (int j = 0; j < tau.n_cols; j++)    printf("%.2lf ", tau(i, j));
+            printf("\n");
+        }   
+        printf("%d\n", T-2);*/
+
         mat new_Sigma = iwishrnd(tau, T - 2);               //a candidate draw from the inverted Wishart
         double sigma_u_star = pow(new_Sigma(0, 0), 0.5);    //value in the state
         double sigma2_v_star = new_Sigma(1, 1);

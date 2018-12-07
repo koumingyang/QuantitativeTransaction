@@ -55,3 +55,26 @@ vec regress(vec x, mat y, int times = 1)
 
     return c;
 }
+
+double f(double x, vec c, int n)
+{
+    int i, j;
+    double sum = 0, now;
+    for (i = 0; i <= n; i++)
+    {
+        for (now = 1.0, j = 1; j <= i; j++)
+            now *= x;
+        sum += c(i) * now;
+    }
+    return sum;
+}
+
+vec regress_r(vec x, mat y, int times)
+{
+    vec c = regress(x, y, times);
+    int m = x.n_elem, n = times;
+    vec r(m);
+    for (int i = 0; i < m; i++)
+        r(i) = y(i, 1) - f(x(i), c, n);
+    return r;
+}

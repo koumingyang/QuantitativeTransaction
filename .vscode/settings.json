@@ -36,6 +36,7 @@
         "deque": "cpp",
         "unordered_map": "cpp",
         "vector": "cpp",
-        "armadillo": "cpp"
+        "armadillo": "cpp",
+        "complex": "cpp"
     }
 }

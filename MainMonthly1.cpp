@@ -11,7 +11,8 @@ using namespace arma;
 mat dat, out;
 vec year, Pt, Dt, Et, b_m, cay, ntis, Rfee, eqis, i_k;
 vec tbl, Ity, Itr, tms, AAA, BAA, corpr, infl, svar, dfy, dfr;
-vec Rt, lagPt, d_e, d_p, d_y, e_p;
+vec csp, E10, D1, E1;
+vec Rt, lagPt, d_e, d_p, d_y, e_p, e10_p;
 int rows, cols;
 
 void input(void)
@@ -27,7 +28,6 @@ void input(void)
         for (j = 0; j < cols; j++)
             scanf("%lf", &dat(i, j));
 
-    cout << "Input p1 over" << endl;
     year = dat.col(0);
     Pt = dat.col(1);
     Dt = dat.col(2);
@@ -37,21 +37,21 @@ void input(void)
     AAA = dat.col(6);
     BAA = dat.col(7);
     Ity = dat.col(8);
-    cay = dat.col(9);
-    ntis = dat.col(10);
-    Rfee = dat.col(11);
-    infl = dat.col(12);
-    eqis = dat.col(13);
-    Itr = dat.col(14);
-    corpr = dat.col(15);
-    svar = dat.col(16);
-    i_k = dat.col(18);
+    ntis = dat.col(9);
+    Rfee = dat.col(10);
+    infl = dat.col(11);
+    Itr = dat.col(12);
+    corpr = dat.col(13);
+    svar = dat.col(14);
+    csp = dat.col(15);
+    E10 = dat.col(18);
+    D1 = dat.col(19);
+    E1 = dat.col(20);
 
     tms=Ity-tbl;
     dfy=BAA-AAA;
     dfr=corpr-Itr;
 
-    cout << "Input p2 over" << endl;
     int n = Pt.n_elem;
     Rt = vec(n); lagPt = vec(n);
     Rt(0) = 0; lagPt(0) = NAN;
@@ -60,14 +60,13 @@ void input(void)
         lagPt(i) = Pt(i-1);
         Rt(i) = log((Dt(i) + Pt(i)) / Pt(i-1)) - log(1.0 + Rfee(i));
     }
-    cout << "Input p3 over" << endl;
 
     d_e = log(Dt) - log(Et);
     d_p = log(Dt) - log(Pt);
     d_y = log(Dt) - log(lagPt);
     e_p = log(Et) - log(Pt);
-    out = zeros<mat>(16, 19);
-    cout << "Input p4 over" << endl;
+    e10_p = log(E10) - log(Pt);
+    out = zeros<mat>(15, 19);
     
     dat.col(0) = Rt;
     dat.col(1) = d_p;
@@ -75,9 +74,9 @@ void input(void)
     dat.col(3) = e_p;
     dat.col(4) = d_e;
     dat.col(5) = svar;
-    dat.col(6) = b_m;
-    dat.col(7) = ntis;
-    dat.col(8) = eqis;
+    dat.col(6) = csp;
+    dat.col(7) = b_m;
+    dat.col(8) = ntis;
     dat.col(9) = tbl;
     dat.col(10) = Ity;
     dat.col(11) = Itr;
@@ -85,40 +84,38 @@ void input(void)
     dat.col(13) = dfy;
     dat.col(14) = dfr;
     dat.col(15) = infl;
-    dat.col(16) = i_k;
-    dat(0, 1) = dat(0, 3) = dat(0, 4) = dat(55, 7) = NAN;
-    for (int i = 42; i <= 47; i++)  dat(i, 15) = NAN;   // ��GW2008���ݱ���һ��
     cout << "Input p5 over" << endl;
 }
 
 void work(void)
 {
     int i;
-    for (i = 0; i < 16; i++)
+    for (i = 0; i < 15; i++)
     {
         int rows = 0;
         for (int j = 0; j < dat.n_rows; j++)
             if (!is_finite(dat(j, i+1)))        //find the rows with nan in book to market value (col 5 in data)
             {
-                dat.shed_row(j);                //delete the rows with nan in book to market value
+                dat.shed_row(j);        //delete the rows with nan in book to market value
                 j--; rows++;
             }
-            
         vec x = dat.col(i+1);           //CHANGE to the relevant predictor, book to market value
         double x0 = x(0);               //initial value of predictor
-        vec rt = dat.rows(1, dat.n_rows - 1).col(0);
-        int ini_win = 20;               //CHANGE when consider begin forecast in 1965 or in 1976
+        vec rt = dat.col(0);
+        rt = rt.subvec(1, dat.n_rows - 1);
+        int ini_win = 240 - rows;       //forecast from 194701
         double propsigma_beta = 0.0001; //set hyperparameter sigma_beta to: 0.0001, 0.001, 0.01, 0.1, 1, 10
         int S = rt.n_elem - ini_win;    //the out-of-sample evaluation periods is S+1
 
-        cout << "Main Part0 Over " << S << endl;
+        //cout << "Main Part0 Over" << endl;
         mat result = genRollingErr(rt, x, ini_win, propsigma_beta, 1);
-        cout << "Main Part0.2 Over" << endl;
+        //cout << "Main Part0.2 Over" << endl;
         vec en = result.col(0);
         vec ea = result.col(1);
         vec ew = result.col(2);
         vec eb = result.col(3);
 
+        //cout << "P1 OK" << endl;
         //calculate the IS statistics
         int n = rt.n_elem;
         mat X0 = join_horiz(ones<vec>(n), x.subvec(0, n-1));
@@ -159,8 +156,6 @@ void work(void)
         double msef_ew = ((double)(S+1-1+1)) * (mse_en - mse_ew) / (mse_ew);
         double msef_eb = ((double)(S+1-1+1)) * (mse_en - mse_eb) / (mse_eb);
 
-        cout << "Main Part1 Over" << endl;
-        
         double alpha_hat = mean(rt);
         vec rt_fit(rt.n_elem);
         rt_fit.fill(alpha_hat);                             //rt fit in the 1st equation of NULL predictability model
@@ -214,7 +209,6 @@ void work(void)
         out2(9) = cv_90_bma; out2(10) = cv_95_bma; out2(11) = cv_99_bma;
         out(i, span(0, 6)) = out1;
         out(i, span(7, 18)) = out2;
-        cout << "Main Part 3 Over";
     }
 }
 

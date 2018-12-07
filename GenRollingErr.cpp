@@ -4,7 +4,12 @@ mat genRollingErr (vec rt, vec x, int ini_win, double propsigma_beta, int flag_b
 {
     int S = rt.n_elem - ini_win;
 
-    //printf("genRollingErr p0\n");fflush(stdout);
+    /*
+    printf("genRollingErr p0\n");fflush(stdout);
+    printf("%d %d %d %lf %d\n", rt.n_elem, x.n_elem, ini_win, propsigma_beta, flag_bma);fflush(stdout);
+    printf("rt: "); for (int i = 0; i < rt.n_elem; i++) printf("%.2lf ", rt(i)); printf("\n");
+    printf("x: "); for (int i = 0; i < x.n_elem; i++) printf("%.2lf ", x(i)); printf("\n");*/
+
     vec en(S+1); en.fill(0); en.fill(NAN);                                  //the rolling OOS errors from the historical mean
     vec ea(S+1); ea.fill(0); ea.fill(NAN);                                  //the rolling OOS errors from the ols
     vec ew(S+1); ew.fill(0); ew.fill(NAN);                                  //the rolling OOS errors from the equal weights
