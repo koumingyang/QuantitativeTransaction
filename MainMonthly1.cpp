@@ -171,18 +171,19 @@ void work(void)
 
         mat resid = join_horiz(u_hat, v_hat);               //residuals for bootstrap
 
-        vec msef_boot_ea(400);
-        vec msef_boot_ew(400);
-        vec msef_boot_bma(400);
-        for (i = 1; i <= 400; i++)
+        int bootstrap_num = 400;
+        vec msef_boot_ea(bootstrap_num);
+        vec msef_boot_ew(bootstrap_num);
+        vec msef_boot_bma(bootstrap_num);
+        for (int j = 1; j <= bootstrap_num; j++)
         {
             //if (i % 100 == 0)
-                printf("Bootstrap No. %d\n", i);
+                printf("Bootstrap No. %d\n", j);
             mat now_resid = bootstrapSample(resid);
             vec msef_boot = bootFuncBMA(now_resid, rt_fit, x_fit, ini_win, x, propsigma_beta);
-            msef_boot_ea(i-1) = msef_boot(0);
-            msef_boot_ew(i-1) = msef_boot(1);
-            msef_boot_bma(i-1) = msef_boot(2);
+            msef_boot_ea(j-1) = msef_boot(0);
+            msef_boot_ew(j-1) = msef_boot(1);
+            msef_boot_bma(j-1) = msef_boot(2);
         }
         //bootstrapped critical values
 
@@ -207,8 +208,13 @@ void work(void)
         out2(3) = cv_90_ea; out2(4) = cv_95_ea; out2(5) = cv_99_ea;
         out2(6) = cv_90_ew; out2(7) = cv_95_ew; out2(8) = cv_99_ew; 
         out2(9) = cv_90_bma; out2(10) = cv_95_bma; out2(11) = cv_99_bma;
-        out(i, span(0, 6)) = out1;
-        out(i, span(7, 18)) = out2;
+        for (int j = 0; j < 7; j++) out(i, j) = out1(j);
+        for (int j = 7; j < 19; j++) out(i, j) = out2(j - 7);
+        cout << "Main Part 3 Over" << endl << "output:" <<endl;;
+        
+        for (int j = 0; j < 19; j++)
+            printf("%.4lf\t", out(i, j));
+        printf("\n");
     }
 }
 
