@@ -216,6 +216,9 @@ void work(void)
             printf("%.4lf\t", out(i, j));
         printf("\n");
     }
+
+    ofstream fout ("output.txt");
+    output(fout, out);
 }
 
 void test(void)
